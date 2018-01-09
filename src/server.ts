@@ -1,4 +1,14 @@
+import * as Path from 'path'
 import * as Hapi from 'hapi'
+import * as Dotenv from 'dotenv'
+
+const {NODE_ENV = 'development'} = process.env
+
+if (NODE_ENV !== 'production') {
+  // when testing load env vars from .env.test
+  const sufx = NODE_ENV !== 'development' ? '.test' : ''
+  Dotenv.config({path: Path.resolve(__dirname, '..', `.env${sufx}`)})
+}
 
 export class Server {
   private static _instance: Hapi.Server
@@ -6,8 +16,8 @@ export class Server {
   public static async start(): Promise<Hapi.Server> {
     try {
       Server._instance = new Hapi.Server({
-        host: '0.0.0.0',
-        port: 3001,
+        host: process.env.HOST,
+        port: process.env.PORT,
       })
 
       Server._instance.route({
