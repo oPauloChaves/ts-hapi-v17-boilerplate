@@ -13,9 +13,15 @@ if (NODE_ENV !== 'production') {
 }
 
 import config from './config'
+import AppRoutes from './routes'
 
 export class Server {
+  private static _config: any = config
   private static _instance: Hapi.Server
+
+  public static config(): any {
+    return Server._config
+  }
 
   public static async start(): Promise<Hapi.Server> {
     try {
@@ -47,15 +53,11 @@ export class Server {
           plugin: MongoModels,
           options: config.mongo,
         },
-      ])
-
-      Server._instance.route({
-        method: 'GET',
-        path: '/',
-        handler: (request, h) => {
-          return {message: 'Hello, World!'}
+        {
+          plugin: AppRoutes,
+          options: config,
         },
-      })
+      ])
 
       await Server._instance.start()
 
