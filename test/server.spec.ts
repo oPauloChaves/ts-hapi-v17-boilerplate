@@ -1,7 +1,7 @@
 import * as Hapi from 'hapi'
 import * as Lab from 'lab'
 import * as Code from 'code'
-import * as Helpers from './helpers';
+import {Server} from '../src/server'
 
 const L = (exports.lab = Lab.script())
 const expect = Code.expect
@@ -10,11 +10,11 @@ L.describe('Server', () => {
   let server: Hapi.Server
 
   L.before(async () => {
-    server = await Helpers.startServer()
+    server = await Server.start()
   })
 
   L.after(async () => {
-    await Helpers.stopServer()
+    await Server.stop()
   })
 
   L.it('[GET] / should return 200 status', async () => {
