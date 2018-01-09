@@ -1,19 +1,15 @@
 import * as Path from 'path'
 import * as Hapi from 'hapi'
 import * as Dotenv from 'dotenv'
-import * as MongoModels from 'hapi-mongodb-models'
-import * as Blipp from 'blipp'
-import * as Good from 'good'
+import Plugins from './plugins'
 
 const {NODE_ENV = 'development'} = process.env
 if (NODE_ENV !== 'production') {
-  // when testing load env vars from .env.test
   const sufx = NODE_ENV !== 'development' ? '.test' : ''
   Dotenv.config({path: Path.resolve(__dirname, '..', `.env${sufx}`)})
 }
 
 import config from './config'
-import AppRoutes from './routes'
 
 export class Server {
   private static _config: any = config
@@ -30,35 +26,7 @@ export class Server {
         port: config.server.port,
       })
 
-      // register plugins to server instance
-      let devPlugins = []
-      if (config.isDev) {
-        devPlugins = [Blipp]
-      }
-
-      // don't register good when testing
-      if (!config.isTest) {
-        devPlugins = [
-          {
-            plugin: Good,
-            options: config.logging,
-          },
-          ...devPlugins,
-        ]
-      }
-
-      await Server._instance.register([
-        ...devPlugins,
-        {
-          plugin: MongoModels,
-          options: config.mongo,
-        },
-        {
-          plugin: AppRoutes,
-          options: config,
-        },
-      ])
-
+      await Plugins.register(Server._instance, config)
       await Server._instance.start()
 
       Server._instance.log(
@@ -82,15 +50,5 @@ export class Server {
     await Server.stop()
 
     return await Server.start()
-  }
-
-  public static instance(): Hapi.Server {
-    return Server._instance
-  }
-
-  public static async inject(
-    options: string | Hapi.InjectedRequestOptions,
-  ): Promise<Hapi.InjectedResponseObject> {
-    return await Server._instance.inject(options)
   }
 }
