@@ -27,6 +27,7 @@
     "boom": "^7.1.1",
     "dotenv": "^4.0.0",
     "hapi": "^17.2.0",
+    "hapi-mongodb-models": "^0.1.0",
     "joi": "^13.1.0"
   },
   "engines": {

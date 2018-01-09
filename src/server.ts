@@ -1,6 +1,7 @@
 import * as Path from 'path'
 import * as Hapi from 'hapi'
 import * as Dotenv from 'dotenv'
+import * as MongoModels from 'hapi-mongodb-models'
 
 const {NODE_ENV = 'development'} = process.env
 
@@ -19,6 +20,12 @@ export class Server {
         host: process.env.HOST,
         port: process.env.PORT,
       })
+
+      await Server._instance.register([
+        {
+          plugin: MongoModels,
+        },
+      ])
 
       Server._instance.route({
         method: 'GET',
