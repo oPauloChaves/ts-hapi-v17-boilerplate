@@ -2,14 +2,17 @@ import * as Path from 'path'
 import * as Hapi from 'hapi'
 import * as Dotenv from 'dotenv'
 import * as MongoModels from 'hapi-mongodb-models'
+import * as Blipp from 'blipp'
+import * as Good from 'good'
 
 const {NODE_ENV = 'development'} = process.env
-
 if (NODE_ENV !== 'production') {
   // when testing load env vars from .env.test
   const sufx = NODE_ENV !== 'development' ? '.test' : ''
   Dotenv.config({path: Path.resolve(__dirname, '..', `.env${sufx}`)})
 }
+
+import config from './config'
 
 export class Server {
   private static _instance: Hapi.Server
@@ -17,13 +20,32 @@ export class Server {
   public static async start(): Promise<Hapi.Server> {
     try {
       Server._instance = new Hapi.Server({
-        host: process.env.HOST,
-        port: process.env.PORT,
+        host: config.server.host,
+        port: config.server.port,
       })
 
+      // register plugins to server instance
+      let devPlugins = []
+      if (config.isDev) {
+        devPlugins = [Blipp]
+      }
+
+      // don't register good when testing
+      if (!config.isTest) {
+        devPlugins = [
+          {
+            plugin: Good,
+            options: config.logging,
+          },
+          ...devPlugins,
+        ]
+      }
+
       await Server._instance.register([
+        ...devPlugins,
         {
           plugin: MongoModels,
+          options: config.mongo,
         },
       ])
 
