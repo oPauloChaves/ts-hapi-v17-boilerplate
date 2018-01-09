@@ -1,0 +1,34 @@
+{
+  "name": "ts-hapi17",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "nodemon:build": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts",
+    "nodemon:start": "npm run nodemon:build"
+  },
+  "devDependencies": {
+    "@types/boom": "^7.1.0",
+    "@types/joi": "^13.0.4",
+    "@types/node": "^9.3.0",
+    "nodemon": "^1.14.9",
+    "prettier": "^1.9.2",
+    "ts-node": "^4.1.0",
+    "typescript": "^2.4.1"
+  },
+  "dependencies": {
+    "boom": "^7.1.1",
+    "hapi": "^17.2.0",
+    "joi": "^13.1.0"
+  },
+  "engines": {
+    "node": ">= 8.9.0"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 80,
+    "semi": false,
+    "trailingComma": "all",
+    "bracketSpacing": false
+  }
+}
